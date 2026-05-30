@@ -164,7 +164,7 @@ export function GiaChat() {
   const [input, setInput] = useState('')
   const [giaTyping, setGiaTyping] = useState(false)
   const [notifDismissed, setNotifDismissed] = useState(false)
-  const [step, setStep] = useState<Step>('last_clean')
+  const [step, setStep] = useState<Step>('service_type')
   const [lead, setLead] = useState<Lead>({
     lastClean: '', serviceType: '', frequency: '',
     address: '', bedsBaths: '', pets: '', sqft: '',
@@ -196,7 +196,7 @@ export function GiaChat() {
       setGiaTyping(true)
       const t = setTimeout(() => {
         setGiaTyping(false)
-        setMessages([{ role: 'gia', text: 'When was the last time your home had a professional clean?' }])
+        setMessages([{ role: 'gia', text: 'Hi, I'm Gia 👋. What kind of cleaning are you looking for?' }])
       }, 1200)
       return () => clearTimeout(t)
     }
@@ -245,7 +245,7 @@ export function GiaChat() {
         >
           <div className="bg-white shadow-xl rounded-2xl rounded-br-none px-4 py-3 max-w-[230px] border border-gray-100">
             <p className="font-inter text-sm text-gray-800 leading-snug">
-              When was the last time your home had a professional clean?
+              Hi, I'm Gia 👋. What kind of cleaning are you looking for?
             </p>
           </div>
           <div className="relative flex-shrink-0">
