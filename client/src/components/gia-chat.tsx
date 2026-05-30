@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Send } from 'lucide-react'
 
-const GREETING = "Hey! 👋 I'm Gia from Mop Mafia. What can I help you with today?"
+const GREETING = "When was the last time your home had a professional clean?"
 
 interface Message {
   role: 'gia' | 'user'
@@ -73,7 +73,7 @@ export function GiaChat() {
       setGiaTyping(false)
       setMessages(prev => [...prev, {
         role: 'gia',
-        text: "Love it! To get you an accurate quote, what city are you in?",
+        text: "Got it. How many beds and baths?",
       }])
     }, 1800)
   }
@@ -96,7 +96,7 @@ export function GiaChat() {
           {/* Preview message */}
           <div className="bg-white shadow-xl rounded-2xl rounded-br-none px-4 py-3 max-w-[220px] border border-gray-100">
             <p className="font-inter text-sm text-gray-800 leading-snug">
-              Hey! 👋 I'm Gia — need a quote?
+              When was the last time your home had a professional clean?
             </p>
           </div>
           {/* Avatar + badge */}
