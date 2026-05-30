@@ -17,6 +17,11 @@ interface Lead {
   chosenTier: string
   chosenPrice: number
   schedulePrefs: string
+  // Contact info collected before revealing price
+  fullName: string
+  phone: string
+  email: string
+  contactStep: 'name' | 'phone' | 'email' | 'done'
 }
 
 type Step =
@@ -26,8 +31,9 @@ type Step =
   | 'beds_baths'
   | 'pets'
   | 'sqft'
+  | 'plans'
+  | 'collect_contact'
   | 'pricing'
-  | 'tier_chosen'
   | 'schedule'
   | 'objection'
   | 'done'
@@ -108,13 +114,6 @@ function buildValueLine(lead: Lead): string {
   return 'A lot of clients start with a deep clean then set a recurring schedule once they see how it holds up.'
 }
 
-function buildPricingMessage(lead: Lead): string {
-  const sqft = lead.sqft || 2000
-  const { pro, plus, ultra } = buildPricing(sqft, lead.serviceType, lead.frequency)
-  const freq = lead.frequency !== 'one time' ? ` ${lead.frequency}` : ''
-
-  return `Here are 3 options for a ${lead.serviceType}${freq}:\n\nPro $${pro} per visit\nCovers all rooms, surfaces, and floors.\n\nPlus $${plus} per visit\nEverything in Pro plus baseboards, ceiling fans, interior appliances, and window ledges. Most popular.\n\nUltra $${ultra} per visit\nFull detail reset. Inside cabinets, vents, light fixtures, every corner. Nothing missed.\n\nWe also have a satisfaction guarantee. If anything is missed we come back and fix it at no charge.\n\nWhich one works for you?`
-}
 
 function isNegative(text: string) {
   const t = text.toLowerCase()
@@ -196,30 +195,94 @@ function getNextGia(
     case 'sqft': {
       const sq = extractSqft(userText)
       updated.sqft = sq || 2000
+      // Show plans WITHOUT pricing — get them to pick first
+      const freq = updated.frequency !== 'one time' ? ` ${updated.frequency}` : ''
       return {
-        text: buildPricingMessage(updated),
-        next: 'pricing',
+        text: `Here are 3 options for a ${updated.serviceType}${freq}:
+
+Pro
+Covers all rooms, surfaces, and floors.
+
+Plus
+Everything in Pro plus baseboards, ceiling fans, interior appliances, and window ledges. Most popular.
+
+Ultra
+Full detail reset. Inside cabinets, vents, light fixtures, every corner. Nothing missed.
+
+We also have a satisfaction guarantee. If anything is missed we come back and fix it at no charge.
+
+Which one works for you?`,
+        next: 'plans',
         updatedLead: updated,
       }
     }
 
-    case 'pricing': {
-      // Negative response
+    case 'plans': {
       if (isNegative(userText)) {
         return { text: 'Totally get it. Is it a price thing or something about the service?', next: 'objection', updatedLead: updated }
       }
       const chosen = getChosenTier(userText, updated)
-      if (chosen) {
-        updated.chosenTier = chosen.tier
-        updated.chosenPrice = chosen.price
+      const wantsPricing = /price|cost|how much|\$|pricing/i.test(userText)
+
+      if (chosen || wantsPricing) {
+        if (chosen) { updated.chosenTier = chosen.tier; updated.chosenPrice = chosen.price }
+        // Before revealing price, collect contact info
+        updated.contactStep = 'name'
         return {
-          text: `${chosen.tier} it is at $${chosen.price} per visit. What are 2 or 3 dates and times that work for you?`,
+          text: "Before I get you the exact numbers, what is your full name?",
+          next: 'collect_contact',
+          updatedLead: updated,
+        }
+      }
+      return { text: 'Which works best for you, Pro, Plus, or Ultra?', next: 'plans', updatedLead: updated }
+    }
+
+    case 'collect_contact': {
+      if (updated.contactStep === 'name') {
+        updated.fullName = userText
+        updated.contactStep = 'phone'
+        return { text: 'And best phone number?', next: 'collect_contact', updatedLead: updated }
+      }
+      if (updated.contactStep === 'phone') {
+        updated.phone = userText
+        updated.contactStep = 'email'
+        return { text: 'And a good email?', next: 'collect_contact', updatedLead: updated }
+      }
+      if (updated.contactStep === 'email') {
+        updated.email = userText
+        updated.contactStep = 'done'
+        // Now reveal pricing for chosen tier (or ask which tier if we still don't know)
+        if (!updated.chosenTier) {
+          return { text: 'Which plan were you leaning toward, Pro, Plus, or Ultra?', next: 'pricing', updatedLead: updated }
+        }
+        const { pro, plus, ultra } = buildPricing(updated.sqft || 2000, updated.serviceType, updated.frequency)
+        const price = updated.chosenTier === 'Pro' ? pro : updated.chosenTier === 'Ultra' ? ultra : plus
+        updated.chosenPrice = price
+        return {
+          text: `Got it. The ${updated.chosenTier} plan is $${price} per visit. What are 2 or 3 dates and times that work for you?`,
           next: 'schedule',
           updatedLead: updated,
         }
       }
-      // Could not determine tier
-      return { text: 'Which one works for you, Pro, Plus, or Ultra?', next: 'pricing', updatedLead: updated }
+      return { text: 'What are 2 or 3 dates and times that work for you?', next: 'schedule', updatedLead: updated }
+    }
+
+    case 'pricing': {
+      // Fallback if we land here after contact collection without a chosen tier
+      if (isNegative(userText)) {
+        return { text: 'Totally get it. Is it a price thing or something about the service?', next: 'objection', updatedLead: updated }
+      }
+      const chosen2 = getChosenTier(userText, updated)
+      if (chosen2) {
+        updated.chosenTier = chosen2.tier
+        updated.chosenPrice = chosen2.price
+        return {
+          text: `${chosen2.tier} plan is $${chosen2.price} per visit. What are 2 or 3 dates and times that work for you?`,
+          next: 'schedule',
+          updatedLead: updated,
+        }
+      }
+      return { text: 'Which one, Pro, Plus, or Ultra?', next: 'pricing', updatedLead: updated }
     }
 
     case 'schedule':
@@ -271,6 +334,7 @@ export function GiaChat() {
   const [lead, setLead] = useState<Lead>({
     lastClean: '', serviceType: '', frequency: '', address: '',
     bedsBaths: '', pets: '', sqft: 0, chosenTier: '', chosenPrice: 0, schedulePrefs: '',
+    fullName: '', phone: '', email: '', contactStep: 'name',
   })
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
