@@ -196,7 +196,7 @@ export function GiaChat() {
       setGiaTyping(true)
       const t = setTimeout(() => {
         setGiaTyping(false)
-        setMessages([{ role: 'gia', text: 'Hi, I'm Gia 👋. What kind of cleaning are you looking for?' }])
+        setMessages([{ role: 'gia', text: "Hi, I’m Gia 👋. What kind of cleaning are you looking for?" }])
       }, 1200)
       return () => clearTimeout(t)
     }
@@ -245,7 +245,7 @@ export function GiaChat() {
         >
           <div className="bg-white shadow-xl rounded-2xl rounded-br-none px-4 py-3 max-w-[230px] border border-gray-100">
             <p className="font-inter text-sm text-gray-800 leading-snug">
-              Hi, I'm Gia 👋. What kind of cleaning are you looking for?
+              Hi, I’m Gia 👋. What kind of cleaning are you looking for?
             </p>
           </div>
           <div className="relative flex-shrink-0">
