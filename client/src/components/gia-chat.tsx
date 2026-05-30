@@ -1,74 +1,160 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Send } from 'lucide-react'
 
-// Conversation steps — Gia moves through these in order
-type Step = 'last_clean' | 'confirm' | 'beds_baths' | 'pets' | 'value' | 'close' | 'done'
-
 interface Message {
   role: 'gia' | 'user'
   text: string
 }
 
-interface ConvoState {
-  step: Step
+// Collected lead data as conversation progresses
+interface Lead {
   lastClean: string
+  serviceType: string
+  frequency: string
+  address: string
   bedsBaths: string
   pets: string
+  sqft: string
 }
 
-function getGiaReply(userText: string, state: ConvoState): { text: string; next: Step } {
-  const t = userText.toLowerCase()
+type Step =
+  | 'last_clean'
+  | 'service_type'
+  | 'address'
+  | 'confirm'
+  | 'beds_baths'
+  | 'pets'
+  | 'value'
+  | 'pricing'
+  | 'sqft'
+  | 'close'
+  | 'done'
 
-  switch (state.step) {
+function inferServiceType(text: string): string {
+  const t = text.toLowerCase()
+  if (t.includes('move') || t.includes('moving')) return 'move in/out clean'
+  if (t.includes('deep') || t.includes('never') || t.includes('year') || t.includes('long')) return 'deep clean'
+  if (t.includes('week') || t.includes('regular') || t.includes('monthly') || t.includes('recurring')) return 'recurring standard clean'
+  return 'deep clean'
+}
+
+function inferFrequency(text: string): string {
+  const t = text.toLowerCase()
+  if (t.includes('week')) return 'every week'
+  if (t.includes('bi') || t.includes('two week') || t.includes('every other')) return 'every two weeks'
+  if (t.includes('month')) return 'monthly'
+  if (t.includes('one time') || t.includes('once') || t.includes('just') || t.includes('single')) return 'one time'
+  return 'one time'
+}
+
+function buildValueLine(lead: Lead): string {
+  const hasPets = lead.pets.toLowerCase().includes('yes') ||
+    lead.pets.toLowerCase().includes('dog') ||
+    lead.pets.toLowerCase().includes('cat')
+  const isLongOverdue = lead.lastClean.toLowerCase().includes('never') ||
+    lead.lastClean.toLowerCase().includes('year') ||
+    lead.lastClean.toLowerCase().includes('long') ||
+    lead.lastClean.toLowerCase().includes('while')
+  const isMoving = lead.serviceType.includes('move')
+  const isRecurring = lead.frequency.includes('week') || lead.frequency.includes('month')
+
+  if (hasPets) return 'We use products that are safe around pets, just so you know.'
+  if (isMoving) return 'We do a full top to bottom so you are starting fresh, not dealing with whatever the last people left.'
+  if (isLongOverdue) return 'If it has been a while we will get it back to baseline on the first visit.'
+  if (isRecurring) return 'Most of our recurring clients say it really holds up between visits once we do the first deep reset.'
+  return 'A lot of clients start with a deep clean then set a recurring schedule once they see how it holds up.'
+}
+
+function getNextGia(userText: string, step: Step, lead: Lead): { text: string; next: Step; updatedLead: Lead } {
+  const updated = { ...lead }
+
+  switch (step) {
     case 'last_clean':
-      // They answered how long since last clean — confirm and ask beds/baths
+      updated.lastClean = userText
+      updated.serviceType = inferServiceType(userText)
       return {
-        text: `Got it. How many beds and baths?`,
-        next: 'beds_baths',
+        text: 'What kind of cleaning are you looking for, one time or more of a recurring schedule?',
+        next: 'service_type',
+        updatedLead: updated,
       }
 
-    case 'beds_baths':
-      // Got beds/baths — ask about pets
+    case 'service_type': {
+      updated.serviceType = inferServiceType(userText)
+      updated.frequency = inferFrequency(userText)
       return {
-        text: 'Any pets in the home?',
-        next: 'pets',
-      }
-
-    case 'pets': {
-      // Got pets info — build relevant value based on what we know
-      const hasPets = t.includes('yes') || t.includes('dog') || t.includes('cat') || t.includes('pet')
-      const valueText = hasPets
-        ? 'We use products that are safe around pets, just so you know.'
-        : state.lastClean.includes('never') || state.lastClean.includes('long') || state.lastClean.includes('year')
-          ? 'If it has been a while we will get it back to baseline on the first visit.'
-          : 'A lot of clients start with a deep clean and then set a recurring schedule once they see how it holds up.'
-      return {
-        text: valueText,
-        next: 'value',
+        text: 'What is the address?',
+        next: 'address',
+        updatedLead: updated,
       }
     }
 
-    case 'value':
-      // Present 3-tier pricing
+    case 'address':
+      updated.address = userText
       return {
-        text: `Here are 3 options based on what you described:\n\nPro: Full standard clean, all rooms, surfaces, and floors. Best for homes that are maintained.\n\nPlus: Everything in Pro plus baseboards, interior appliances, and window ledges. Our most popular.\n\nUltra: Complete detail clean, every surface, every corner, products upgraded for a deep reset.\n\nI can put exact numbers together once I know your square footage. What is the rough size of the home?`,
+        text: `Got it. To confirm you want a ${updated.serviceType} ${updated.frequency !== 'one time' ? updated.frequency : ''} for ${updated.address}.`.replace(/\s+/g, ' ').trim(),
+        next: 'confirm',
+        updatedLead: updated,
+      }
+
+    case 'confirm':
+      // They confirm or correct — either way move to beds/baths
+      if (userText.toLowerCase().includes('no') || userText.toLowerCase().includes('actually') || userText.toLowerCase().includes('wrong')) {
+        return {
+          text: 'No problem, what should I change?',
+          next: 'service_type',
+          updatedLead: updated,
+        }
+      }
+      return {
+        text: 'How many beds and baths?',
+        next: 'beds_baths',
+        updatedLead: updated,
+      }
+
+    case 'beds_baths':
+      updated.bedsBaths = userText
+      return {
+        text: 'Any pets in the home?',
+        next: 'pets',
+        updatedLead: updated,
+      }
+
+    case 'pets':
+      updated.pets = userText
+      return {
+        text: buildValueLine(updated),
+        next: 'value',
+        updatedLead: updated,
+      }
+
+    case 'value':
+      return {
+        text: `Here are 3 options for your situation:\n\nPro: Full standard clean, all rooms, surfaces, and floors.\n\nPlus: Everything in Pro plus baseboards, interior appliances, and window ledges. Most popular.\n\nUltra: Complete detail clean. Every surface, every corner. Full reset.\n\nWhat is the rough square footage so I can put the numbers together?`,
+        next: 'sqft',
+        updatedLead: updated,
+      }
+
+    case 'sqft':
+      updated.sqft = userText
+      return {
+        text: 'When works for a first visit, weekday or weekend?',
         next: 'close',
+        updatedLead: updated,
       }
 
     case 'close':
       return {
-        text: 'When works for a first visit, weekday or weekend?',
+        text: 'Perfect. I will pass your info along and someone will reach out shortly to confirm.',
         next: 'done',
-      }
-
-    case 'done':
-      return {
-        text: 'Perfect. I will send your info over and someone will confirm the details with you shortly.',
-        next: 'done',
+        updatedLead: updated,
       }
 
     default:
-      return { text: 'When works for a first visit, weekday or weekend?', next: 'done' }
+      return {
+        text: 'I will have someone follow up with you shortly.',
+        next: 'done',
+        updatedLead: updated,
+      }
   }
 }
 
@@ -78,16 +164,14 @@ export function GiaChat() {
   const [input, setInput] = useState('')
   const [giaTyping, setGiaTyping] = useState(false)
   const [notifDismissed, setNotifDismissed] = useState(false)
-  const [convo, setConvo] = useState<ConvoState>({
-    step: 'last_clean',
-    lastClean: '',
-    bedsBaths: '',
-    pets: '',
+  const [step, setStep] = useState<Step>('last_clean')
+  const [lead, setLead] = useState<Lead>({
+    lastClean: '', serviceType: '', frequency: '',
+    address: '', bedsBaths: '', pets: '', sqft: '',
   })
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Show notification bubble after 7s
   useEffect(() => {
     const t = setTimeout(() => {
       if (phase === 'hidden') setPhase('bubble')
@@ -95,33 +179,29 @@ export function GiaChat() {
     return () => clearTimeout(t)
   }, [])
 
-  // Tab title blink when minimized
   useEffect(() => {
     if (phase === 'bubble' && !notifDismissed) {
       const original = document.title
-      let toggled = false
-      const interval = setInterval(() => {
-        document.title = toggled ? original : '💬 1 new message'
-        toggled = !toggled
+      let tog = false
+      const id = setInterval(() => {
+        document.title = tog ? original : '💬 1 new message'
+        tog = !tog
       }, 1500)
-      return () => { clearInterval(interval); document.title = original }
+      return () => { clearInterval(id); document.title = original }
     }
   }, [phase, notifDismissed])
 
-  // Play greeting when chat opens
   useEffect(() => {
     if (phase === 'open' && messages.length === 0) {
       setGiaTyping(true)
-      const delay = 1200
       const t = setTimeout(() => {
         setGiaTyping(false)
         setMessages([{ role: 'gia', text: 'When was the last time your home had a professional clean?' }])
-      }, delay)
+      }, 1200)
       return () => clearTimeout(t)
     }
   }, [phase])
 
-  // Scroll to bottom
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, giaTyping])
@@ -134,29 +214,20 @@ export function GiaChat() {
 
   const sendMessage = () => {
     const text = input.trim()
-    if (!text) return
+    if (!text || step === 'done') return
     setInput('')
+    setMessages(prev => [...prev, { role: 'user', text }])
 
-    const userMsg: Message = { role: 'user', text }
-    setMessages(prev => [...prev, userMsg])
+    const { text: replyText, next, updatedLead } = getNextGia(text, step, lead)
+    setStep(next)
+    setLead(updatedLead)
 
-    // Update convo state based on current step
-    const updatedConvo = { ...convo }
-    if (convo.step === 'last_clean') updatedConvo.lastClean = text
-    if (convo.step === 'beds_baths') updatedConvo.bedsBaths = text
-    if (convo.step === 'pets') updatedConvo.pets = text
-
-    const { text: replyText, next } = getGiaReply(text, updatedConvo)
-    updatedConvo.step = next
-    setConvo(updatedConvo)
-
-    // Typing delay proportional to reply length
-    const typingMs = Math.min(600 + replyText.length * 18, 3000)
+    const delay = Math.min(800 + replyText.length * 20, 3200)
     setGiaTyping(true)
     setTimeout(() => {
       setGiaTyping(false)
       setMessages(prev => [...prev, { role: 'gia', text: replyText }])
-    }, typingMs)
+    }, delay)
   }
 
   const handleKey = (e: React.KeyboardEvent) => {
@@ -167,12 +238,10 @@ export function GiaChat() {
 
   return (
     <>
-      {/* Notification bubble */}
       {phase === 'bubble' && (
         <div
           className="fixed bottom-20 md:bottom-6 right-4 z-50 flex items-end gap-2 cursor-pointer animate-bounce-in"
           onClick={openChat}
-          aria-label="Chat with Gia"
         >
           <div className="bg-white shadow-xl rounded-2xl rounded-br-none px-4 py-3 max-w-[230px] border border-gray-100">
             <p className="font-inter text-sm text-gray-800 leading-snug">
@@ -180,54 +249,30 @@ export function GiaChat() {
             </p>
           </div>
           <div className="relative flex-shrink-0">
-            <img
-              src="/gia-avatar.jpg"
-              alt="Gia from Mop Mafia"
-              className="w-14 h-14 rounded-full object-cover border-2 border-gold shadow-lg"
-            />
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow">
-              1
-            </span>
+            <img src="/gia-avatar.jpg" alt="Gia" className="w-14 h-14 rounded-full object-cover border-2 border-gold shadow-lg" />
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow">1</span>
           </div>
         </div>
       )}
 
-      {/* Chat window */}
       {phase === 'open' && (
-        <div
-          className="fixed bottom-20 md:bottom-6 right-4 z-50 w-[340px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
-          style={{ height: '480px' }}
-        >
-          {/* Header */}
+        <div className="fixed bottom-20 md:bottom-6 right-4 z-50 w-[340px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden" style={{ height: '480px' }}>
           <div className="bg-navy px-4 py-3 flex items-center gap-3">
             <div className="relative flex-shrink-0">
-              <img
-                src="/gia-avatar.jpg"
-                alt="Gia"
-                className="w-10 h-10 rounded-full object-cover border-2 border-gold"
-              />
+              <img src="/gia-avatar.jpg" alt="Gia" className="w-10 h-10 rounded-full object-cover border-2 border-gold" />
               <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-navy" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white font-inter font-semibold text-sm">Gia</p>
               <p className="text-gold text-xs font-inter">Mop Mafia</p>
             </div>
-            <button
-              onClick={() => setPhase('bubble')}
-              className="text-gray-300 hover:text-white transition-colors p-1"
-              aria-label="Minimize"
-            >
-              <X size={18} />
-            </button>
+            <button onClick={() => setPhase('bubble')} className="text-gray-300 hover:text-white transition-colors p-1"><X size={18} /></button>
           </div>
 
-          {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3 bg-gray-50">
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'items-end gap-2'}`}>
-                {msg.role === 'gia' && (
-                  <img src="/gia-avatar.jpg" alt="Gia" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
-                )}
+                {msg.role === 'gia' && <img src="/gia-avatar.jpg" alt="Gia" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />}
                 <div className={`max-w-[78%] px-3 py-2 rounded-2xl text-sm font-inter leading-snug whitespace-pre-line ${
                   msg.role === 'user'
                     ? 'bg-navy text-white rounded-br-none'
@@ -237,7 +282,6 @@ export function GiaChat() {
                 </div>
               </div>
             ))}
-
             {giaTyping && (
               <div className="flex items-end gap-2">
                 <img src="/gia-avatar.jpg" alt="Gia" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
@@ -251,7 +295,6 @@ export function GiaChat() {
             <div ref={bottomRef} />
           </div>
 
-          {/* Input */}
           <div className="px-3 py-3 border-t border-gray-100 bg-white flex gap-2 items-center">
             <input
               ref={inputRef}
@@ -259,14 +302,14 @@ export function GiaChat() {
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKey}
-              placeholder="Type a message..."
-              className="flex-1 text-sm text-gray-800 placeholder-gray-400 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 outline-none focus:border-gold transition-colors font-inter"
+              placeholder={step === 'done' ? 'Someone will be in touch shortly.' : 'Type a message...'}
+              disabled={step === 'done'}
+              className="flex-1 text-sm text-gray-800 placeholder-gray-400 bg-gray-50 border border-gray-200 rounded-full px-4 py-2 outline-none focus:border-gold transition-colors font-inter disabled:opacity-50"
             />
             <button
               onClick={sendMessage}
-              disabled={!input.trim()}
+              disabled={!input.trim() || step === 'done'}
               className="w-9 h-9 rounded-full bg-gold text-navy flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-40 flex-shrink-0"
-              aria-label="Send"
             >
               <Send size={15} />
             </button>
