@@ -42,8 +42,11 @@ function inferServiceType(text: string): string {
 
 function inferFrequency(text: string): string {
   const t = text.toLowerCase()
-  if (t.includes('week')) return 'every week'
-  if (t.includes('bi') || t.includes('two week') || t.includes('every other')) return 'every two weeks'
+  // bi-weekly checks must come BEFORE generic "week" check
+  if (t.includes('every other week') || t.includes('every 2 week') || t.includes('every two week') || t.includes('bi-week') || t.includes('biweek') || t.includes('bi week')) return 'every two weeks'
+  if (t.includes('2 week') || t.includes('other week') || t.includes('two week')) return 'every two weeks'
+  if (t.includes('bi-monthly') || t.includes('twice a month')) return 'twice a month'
+  if (t.includes('every week') || t.includes('weekly') || (t.includes('week') && !t.includes('two') && !t.includes('other') && !t.includes('2'))) return 'every week'
   if (t.includes('month')) return 'monthly'
   if (t.includes('one time') || t.includes('once') || t.includes('just') || t.includes('single')) return 'one time'
   return 'one time'
@@ -81,7 +84,7 @@ function buildValueLine(lead: Lead): string {
   return 'A lot of clients start with a deep clean then set a recurring schedule once they see how it holds up.'
 }
 
-function getNextGia(userText: string, step: Step, lead: Lead): { text: string; next: Step; updatedLead: Lead } {
+function getNextGia(userText: string, step: Step, lead: Lead): { text: string; next: Step; updatedLead: Lead; autoNext?: { text: string; next: Step; updatedLead: Lead } } {
   const updated = { ...lead }
 
   switch (step) {
@@ -159,15 +162,22 @@ function getNextGia(userText: string, step: Step, lead: Lead): { text: string; n
 
     case 'pets':
       updated.pets = userText
+      // Auto-queue the pricing question right after value line — no reply needed
       return {
         text: buildValueLine(updated),
         next: 'value',
         updatedLead: updated,
+        autoNext: {
+          text: 'Here are 3 options based on your situation:\n\nPro: Standard clean, all rooms, surfaces, floors. Typical pricing based on sqft.\n\nPlus: Everything in Pro plus baseboards, interior appliances, window ledges, and ceiling fans. Most popular.\n\nUltra: Full detail reset. Every surface, every corner, inside cabinets, vents, light fixtures.\n\nWhat is the rough square footage? I will put exact numbers on each option.',
+          next: 'sqft',
+          updatedLead: updated,
+        }
       }
 
     case 'value':
+      // This step is now auto-skipped via autoNext — handle edge case if user somehow lands here
       return {
-        text: `Here are 3 options for your situation:\n\nPro: Full standard clean, all rooms, surfaces, and floors.\n\nPlus: Everything in Pro plus baseboards, interior appliances, and window ledges. Most popular.\n\nUltra: Complete detail clean. Every surface, every corner. Full reset.\n\nWhat is the rough square footage so I can put the numbers together?`,
+        text: 'What is the rough square footage so I can put numbers together?',
         next: 'sqft',
         updatedLead: updated,
       }
@@ -256,7 +266,7 @@ export function GiaChat() {
     setInput('')
     setMessages(prev => [...prev, { role: 'user', text }])
 
-    const { text: replyText, next, updatedLead } = getNextGia(text, step, lead)
+    const { text: replyText, next, updatedLead, autoNext } = getNextGia(text, step, lead)
     setStep(next)
     setLead(updatedLead)
 
@@ -265,6 +275,19 @@ export function GiaChat() {
     setTimeout(() => {
       setGiaTyping(false)
       setMessages(prev => [...prev, { role: 'gia', text: replyText }])
+
+      // Auto-queue a follow-up without waiting for user reply
+      if (autoNext) {
+        const { text: followText, next: followStep, updatedLead: followLead } = autoNext
+        const followDelay = Math.min(1200 + followText.length * 20, 3500)
+        setGiaTyping(true)
+        setTimeout(() => {
+          setGiaTyping(false)
+          setStep(followStep)
+          setLead(followLead)
+          setMessages(prev => [...prev, { role: 'gia', text: followText }])
+        }, followDelay)
+      }
     }, delay)
   }
 
