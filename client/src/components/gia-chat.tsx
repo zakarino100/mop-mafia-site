@@ -1,11 +1,75 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Send } from 'lucide-react'
 
-const GREETING = "When was the last time your home had a professional clean?"
+// Conversation steps — Gia moves through these in order
+type Step = 'last_clean' | 'confirm' | 'beds_baths' | 'pets' | 'value' | 'close' | 'done'
 
 interface Message {
   role: 'gia' | 'user'
   text: string
+}
+
+interface ConvoState {
+  step: Step
+  lastClean: string
+  bedsBaths: string
+  pets: string
+}
+
+function getGiaReply(userText: string, state: ConvoState): { text: string; next: Step } {
+  const t = userText.toLowerCase()
+
+  switch (state.step) {
+    case 'last_clean':
+      // They answered how long since last clean — confirm and ask beds/baths
+      return {
+        text: `Got it. How many beds and baths?`,
+        next: 'beds_baths',
+      }
+
+    case 'beds_baths':
+      // Got beds/baths — ask about pets
+      return {
+        text: 'Any pets in the home?',
+        next: 'pets',
+      }
+
+    case 'pets': {
+      // Got pets info — build relevant value based on what we know
+      const hasPets = t.includes('yes') || t.includes('dog') || t.includes('cat') || t.includes('pet')
+      const valueText = hasPets
+        ? 'We use products that are safe around pets, just so you know.'
+        : state.lastClean.includes('never') || state.lastClean.includes('long') || state.lastClean.includes('year')
+          ? 'If it has been a while we will get it back to baseline on the first visit.'
+          : 'A lot of clients start with a deep clean and then set a recurring schedule once they see how it holds up.'
+      return {
+        text: valueText,
+        next: 'value',
+      }
+    }
+
+    case 'value':
+      // Present 3-tier pricing
+      return {
+        text: `Here are 3 options based on what you described:\n\nPro: Full standard clean, all rooms, surfaces, and floors. Best for homes that are maintained.\n\nPlus: Everything in Pro plus baseboards, interior appliances, and window ledges. Our most popular.\n\nUltra: Complete detail clean, every surface, every corner, products upgraded for a deep reset.\n\nI can put exact numbers together once I know your square footage. What is the rough size of the home?`,
+        next: 'close',
+      }
+
+    case 'close':
+      return {
+        text: 'When works for a first visit, weekday or weekend?',
+        next: 'done',
+      }
+
+    case 'done':
+      return {
+        text: 'Perfect. I will send your info over and someone will confirm the details with you shortly.',
+        next: 'done',
+      }
+
+    default:
+      return { text: 'When works for a first visit, weekday or weekend?', next: 'done' }
+  }
 }
 
 export function GiaChat() {
@@ -14,6 +78,12 @@ export function GiaChat() {
   const [input, setInput] = useState('')
   const [giaTyping, setGiaTyping] = useState(false)
   const [notifDismissed, setNotifDismissed] = useState(false)
+  const [convo, setConvo] = useState<ConvoState>({
+    step: 'last_clean',
+    lastClean: '',
+    bedsBaths: '',
+    pets: '',
+  })
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -25,13 +95,13 @@ export function GiaChat() {
     return () => clearTimeout(t)
   }, [])
 
-  // Tab title notification when minimized
+  // Tab title blink when minimized
   useEffect(() => {
     if (phase === 'bubble' && !notifDismissed) {
       const original = document.title
       let toggled = false
       const interval = setInterval(() => {
-        document.title = toggled ? original : '💬 1 message from Gia'
+        document.title = toggled ? original : '💬 1 new message'
         toggled = !toggled
       }, 1500)
       return () => { clearInterval(interval); document.title = original }
@@ -42,15 +112,16 @@ export function GiaChat() {
   useEffect(() => {
     if (phase === 'open' && messages.length === 0) {
       setGiaTyping(true)
+      const delay = 1200
       const t = setTimeout(() => {
         setGiaTyping(false)
-        setMessages([{ role: 'gia', text: GREETING }])
-      }, 1400)
+        setMessages([{ role: 'gia', text: 'When was the last time your home had a professional clean?' }])
+      }, delay)
       return () => clearTimeout(t)
     }
   }, [phase])
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, giaTyping])
@@ -65,17 +136,27 @@ export function GiaChat() {
     const text = input.trim()
     if (!text) return
     setInput('')
-    setMessages(prev => [...prev, { role: 'user', text }])
 
-    // Gia auto-reply (placeholder until backend is wired)
+    const userMsg: Message = { role: 'user', text }
+    setMessages(prev => [...prev, userMsg])
+
+    // Update convo state based on current step
+    const updatedConvo = { ...convo }
+    if (convo.step === 'last_clean') updatedConvo.lastClean = text
+    if (convo.step === 'beds_baths') updatedConvo.bedsBaths = text
+    if (convo.step === 'pets') updatedConvo.pets = text
+
+    const { text: replyText, next } = getGiaReply(text, updatedConvo)
+    updatedConvo.step = next
+    setConvo(updatedConvo)
+
+    // Typing delay proportional to reply length
+    const typingMs = Math.min(600 + replyText.length * 18, 3000)
     setGiaTyping(true)
     setTimeout(() => {
       setGiaTyping(false)
-      setMessages(prev => [...prev, {
-        role: 'gia',
-        text: "Got it. How many beds and baths?",
-      }])
-    }, 1800)
+      setMessages(prev => [...prev, { role: 'gia', text: replyText }])
+    }, typingMs)
   }
 
   const handleKey = (e: React.KeyboardEvent) => {
@@ -91,22 +172,19 @@ export function GiaChat() {
         <div
           className="fixed bottom-20 md:bottom-6 right-4 z-50 flex items-end gap-2 cursor-pointer animate-bounce-in"
           onClick={openChat}
-          aria-label="Open chat with Gia"
+          aria-label="Chat with Gia"
         >
-          {/* Preview message */}
-          <div className="bg-white shadow-xl rounded-2xl rounded-br-none px-4 py-3 max-w-[220px] border border-gray-100">
+          <div className="bg-white shadow-xl rounded-2xl rounded-br-none px-4 py-3 max-w-[230px] border border-gray-100">
             <p className="font-inter text-sm text-gray-800 leading-snug">
               When was the last time your home had a professional clean?
             </p>
           </div>
-          {/* Avatar + badge */}
           <div className="relative flex-shrink-0">
             <img
               src="/gia-avatar.jpg"
               alt="Gia from Mop Mafia"
               className="w-14 h-14 rounded-full object-cover border-2 border-gold shadow-lg"
             />
-            {/* Red notification badge */}
             <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center shadow">
               1
             </span>
@@ -114,11 +192,12 @@ export function GiaChat() {
         </div>
       )}
 
-      {/* Full chat window */}
+      {/* Chat window */}
       {phase === 'open' && (
-        <div className="fixed bottom-20 md:bottom-6 right-4 z-50 w-[340px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
-          style={{ height: '480px' }}>
-
+        <div
+          className="fixed bottom-20 md:bottom-6 right-4 z-50 w-[340px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
+          style={{ height: '480px' }}
+        >
           {/* Header */}
           <div className="bg-navy px-4 py-3 flex items-center gap-3">
             <div className="relative flex-shrink-0">
@@ -131,12 +210,12 @@ export function GiaChat() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white font-inter font-semibold text-sm">Gia</p>
-              <p className="text-gold text-xs font-inter">Mop Mafia · Usually responds instantly</p>
+              <p className="text-gold text-xs font-inter">Mop Mafia</p>
             </div>
             <button
               onClick={() => setPhase('bubble')}
               className="text-gray-300 hover:text-white transition-colors p-1"
-              aria-label="Minimize chat"
+              aria-label="Minimize"
             >
               <X size={18} />
             </button>
@@ -149,7 +228,7 @@ export function GiaChat() {
                 {msg.role === 'gia' && (
                   <img src="/gia-avatar.jpg" alt="Gia" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
                 )}
-                <div className={`max-w-[75%] px-3 py-2 rounded-2xl text-sm font-inter leading-snug ${
+                <div className={`max-w-[78%] px-3 py-2 rounded-2xl text-sm font-inter leading-snug whitespace-pre-line ${
                   msg.role === 'user'
                     ? 'bg-navy text-white rounded-br-none'
                     : 'bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-none'
@@ -159,7 +238,6 @@ export function GiaChat() {
               </div>
             ))}
 
-            {/* Typing indicator */}
             {giaTyping && (
               <div className="flex items-end gap-2">
                 <img src="/gia-avatar.jpg" alt="Gia" className="w-7 h-7 rounded-full object-cover flex-shrink-0" />
@@ -188,7 +266,7 @@ export function GiaChat() {
               onClick={sendMessage}
               disabled={!input.trim()}
               className="w-9 h-9 rounded-full bg-gold text-navy flex items-center justify-center hover:opacity-90 transition-opacity disabled:opacity-40 flex-shrink-0"
-              aria-label="Send message"
+              aria-label="Send"
             >
               <Send size={15} />
             </button>
