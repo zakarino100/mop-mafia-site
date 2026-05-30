@@ -33,9 +33,11 @@ type Step =
 function inferServiceType(text: string): string {
   const t = text.toLowerCase()
   if (t.includes('move') || t.includes('moving')) return 'move in/out clean'
-  if (t.includes('deep') || t.includes('never') || t.includes('year') || t.includes('long')) return 'deep clean'
-  if (t.includes('week') || t.includes('regular') || t.includes('monthly') || t.includes('recurring')) return 'recurring standard clean'
-  return 'deep clean'
+  if (t.includes('deep')) return 'deep clean'
+  if (t.includes('standard') || t.includes('normal') || t.includes('regular') || t.includes('basic')) return 'standard clean'
+  if (t.includes('week') || t.includes('month') || t.includes('recurring')) return 'standard clean'
+  // If they gave beds/baths or something we can't parse — return empty so we ask again
+  return ''
 }
 
 function inferFrequency(text: string): string {
@@ -45,6 +47,20 @@ function inferFrequency(text: string): string {
   if (t.includes('month')) return 'monthly'
   if (t.includes('one time') || t.includes('once') || t.includes('just') || t.includes('single')) return 'one time'
   return 'one time'
+}
+
+// Try to pull beds/baths out of any message
+function extractBedsBaths(text: string): string {
+  const m = text.match(/(\d+)\s*(bed|bd)/i)
+  const b = text.match(/(\d+)\s*(bath|ba)/i)
+  if (m || b) {
+    const beds = m ? m[1] : null
+    const baths = b ? b[1] : null
+    if (beds && baths) return `${beds} bed ${baths} bath`
+    if (beds) return `${beds} bed`
+    if (baths) return `${baths} bath`
+  }
+  return ''
 }
 
 function buildValueLine(lead: Lead): string {
@@ -79,11 +95,24 @@ function getNextGia(userText: string, step: Step, lead: Lead): { text: string; n
       }
 
     case 'service_type': {
-      updated.serviceType = inferServiceType(userText)
-      updated.frequency = inferFrequency(userText)
+      // Check if they gave us beds/baths instead of service type
+      const bedsBathsFromServiceQ = extractBedsBaths(userText)
+      if (bedsBathsFromServiceQ) updated.bedsBaths = bedsBathsFromServiceQ
+
+      const parsedService = inferServiceType(userText)
+      if (parsedService) {
+        updated.serviceType = parsedService
+        updated.frequency = inferFrequency(userText)
+        return {
+          text: 'What is the address?',
+          next: 'address',
+          updatedLead: updated,
+        }
+      }
+      // Could not determine service type — ask specifically
       return {
-        text: 'What is the address?',
-        next: 'address',
+        text: 'Are you thinking a one-time clean or a recurring schedule like weekly or monthly?',
+        next: 'service_type',
         updatedLead: updated,
       }
     }
@@ -91,25 +120,34 @@ function getNextGia(userText: string, step: Step, lead: Lead): { text: string; n
     case 'address':
       updated.address = userText
       return {
-        text: `Got it. To confirm you want a ${updated.serviceType} ${updated.frequency !== 'one time' ? updated.frequency : ''} for ${updated.address}.`.replace(/\s+/g, ' ').trim(),
+        text: `Got it. To confirm you want a ${updated.serviceType}${updated.frequency && updated.frequency !== 'one time' ? ' ' + updated.frequency : ''} for ${updated.address}.`.replace(/\s+/g, ' ').trim(),
         next: 'confirm',
         updatedLead: updated,
       }
 
-    case 'confirm':
-      // They confirm or correct — either way move to beds/baths
-      if (userText.toLowerCase().includes('no') || userText.toLowerCase().includes('actually') || userText.toLowerCase().includes('wrong')) {
+    case 'confirm': {
+      const t2 = userText.toLowerCase()
+      // Did they correct the service type?
+      const correctedService = inferServiceType(userText)
+      if ((t2.includes('not') || t2.includes('no') || t2.includes('actually') || t2.includes('just') || t2.includes('normal') || t2.includes('standard')) && correctedService) {
+        updated.serviceType = correctedService
+        const nextQ = updated.bedsBaths ? 'Any pets in the home?' : 'How many beds and baths?'
+        const nextStep = updated.bedsBaths ? 'pets' : 'beds_baths'
         return {
-          text: 'No problem, what should I change?',
-          next: 'service_type',
+          text: `Got it, ${correctedService}. ${nextQ}`,
+          next: nextStep,
           updatedLead: updated,
         }
       }
+      // They confirmed or gave more info — move on
+      const nextQ2 = updated.bedsBaths ? 'Any pets in the home?' : 'How many beds and baths?'
+      const nextStep2 = updated.bedsBaths ? 'pets' : 'beds_baths'
       return {
-        text: 'How many beds and baths?',
-        next: 'beds_baths',
+        text: nextQ2,
+        next: nextStep2,
         updatedLead: updated,
       }
+    }
 
     case 'beds_baths':
       updated.bedsBaths = userText
