@@ -1,14 +1,30 @@
 import { Link } from 'wouter'
 
 const images = [
-  { src: '/mopmafia-kitchen.jpg', alt: 'Luxury kitchen professionally cleaned', caption: 'Kitchen' },
-  { src: '/mopmafia-bathroom.jpg', alt: 'Luxury bathroom cleaned by Mop Mafia', caption: 'Bathroom' },
-  { src: '/mopmafia-living.jpg', alt: 'Immaculate luxury living room', caption: 'Living Room' },
-  { src: '/mopmafia-bedroom.jpg', alt: 'Pristine luxury master bedroom', caption: 'Master Bedroom' },
-  { src: '/mopmafia-foyer.jpg', alt: 'Grand luxury home entryway', caption: 'Foyer' },
-  { src: '/mopmafia-detail.jpg', alt: 'Detail cleaning of luxury surface', caption: 'Detail Work' },
-  { src: '/mopmafia-neighborhood.jpg', alt: 'Luxury neighborhood we serve', caption: 'Our Service Area' },
-  { src: '/mopmafia-estate.jpg', alt: 'Luxury estate home', caption: 'Estate Homes' },
+  { src: '/gallery-exterior-01.jpg', alt: 'Luxury estate home exterior', caption: 'Luxury Estates' },
+  { src: '/gallery-kitchen-01.jpg', alt: 'High-end kitchen before cleaning', caption: 'Kitchen' },
+  { src: '/gallery-bathroom-01.jpg', alt: 'Spa-like primary bathroom', caption: 'Primary Bath' },
+  { src: '/gallery-living-01.jpg', alt: 'Luxury living room', caption: 'Living Room' },
+  { src: '/gallery-foyer-01.jpg', alt: 'Grand entry foyer', caption: 'Foyer' },
+  { src: '/gallery-bedroom-01.jpg', alt: 'Master bedroom suite', caption: 'Master Suite' },
+  { src: '/gallery-dining-01.jpg', alt: 'Formal dining room after entertaining', caption: 'Dining Room' },
+  { src: '/gallery-exterior-02.jpg', alt: 'Georgian colonial luxury home', caption: 'Georgian Estate' },
+  { src: '/gallery-bathroom-02.jpg', alt: 'Contemporary guest bathroom', caption: 'Guest Bath' },
+  { src: '/gallery-living-02.jpg', alt: 'Modern great room with glass walls', caption: 'Great Room' },
+  { src: '/gallery-wine-01.jpg', alt: 'Luxury wine cellar and tasting room', caption: 'Wine Cellar' },
+  { src: '/gallery-estate-01.jpg', alt: 'Ultra-luxury compound aerial view', caption: 'Estate Compound' },
+  { src: '/gallery-mudroom-01.jpg', alt: 'Luxury mudroom and laundry', caption: 'Mudroom' },
+  { src: '/gallery-gym-01.jpg', alt: 'Private home gym', caption: 'Home Gym' },
+  { src: '/gallery-exterior-03.jpg', alt: 'Contemporary home at dusk', caption: 'Modern Estate' },
+  { src: '/gallery-closet-01.jpg', alt: 'Walk-in designer closet', caption: 'Primary Closet' },
+  { src: '/gallery-kitchen-03.jpg', alt: 'Craftsman kitchen', caption: 'Craftsman Kitchen' },
+  { src: '/gallery-theater-01.jpg', alt: 'Home theater after movie night', caption: 'Home Theater' },
+  { src: '/gallery-exterior-04.jpg', alt: 'Traditional home exterior', caption: 'Traditional Home' },
+  { src: '/gallery-open-plan-01.jpg', alt: 'Open-plan kitchen and family room', caption: 'Open Plan' },
+  { src: '/gallery-bathroom-03.jpg', alt: 'Master bathroom dual vanities', caption: 'Master Bath' },
+  { src: '/gallery-office-01.jpg', alt: 'Luxury home office', caption: 'Home Office' },
+  { src: '/gallery-outdoor-01.jpg', alt: 'Outdoor living and pool area', caption: 'Outdoor Living' },
+  { src: '/gallery-kitchen-02.jpg', alt: 'Chef kitchen luxury home', caption: 'Chef\'s Kitchen' },
 ]
 
 export function GalleryPage() {
@@ -19,23 +35,23 @@ export function GalleryPage() {
         <p className="text-gold text-sm font-inter font-semibold tracking-widest uppercase mb-4">Our Work</p>
         <h1 className="font-playfair text-5xl md:text-6xl text-white mb-4">Every Room. Every Detail.</h1>
         <p className="font-inter text-gray-300 text-lg max-w-2xl mx-auto">
-          We believe a clean home speaks for itself. Here's what that looks like.
+          The homes we care for — from cozy 4-bedroom estates to full compounds. Some caught mid-week, some after a dinner party. This is why they call us.
         </p>
       </section>
 
-      {/* Masonry-style grid */}
-      <section className="bg-white py-16 px-6">
+      {/* Masonry gallery */}
+      <section className="bg-white py-16 px-4 md:px-8">
         <div className="max-w-7xl mx-auto">
-          <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
+          <div className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 gap-3 space-y-3">
             {images.map((img, i) => (
-              <div key={i} className="break-inside-avoid group relative overflow-hidden rounded-sm">
+              <div key={i} className="break-inside-avoid group relative overflow-hidden rounded-sm shadow-sm">
                 <img
                   src={img.src}
                   alt={img.alt}
-                  loading={i < 3 ? 'eager' : 'lazy'}
+                  loading={i < 4 ? 'eager' : 'lazy'}
                   className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-4 py-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <p className="text-white font-inter text-sm font-semibold">{img.caption}</p>
                 </div>
               </div>
@@ -55,7 +71,6 @@ export function GalleryPage() {
         </Link>
       </section>
 
-      {/* Footer */}
       <footer className="bg-navy text-white border-t border-gold/20 py-8 px-6 text-center">
         <p className="font-inter text-sm text-gray-400">© {new Date().getFullYear()} Mop Mafia. All rights reserved.</p>
       </footer>

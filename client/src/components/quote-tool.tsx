@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Mail, Phone, MapPin, Send } from 'lucide-react'
+import { AddressAutocomplete } from './address-autocomplete'
 
 export function QuoteTool() {
   const [formData, setFormData] = useState({
@@ -139,14 +140,10 @@ ${formData.message}
 
             <div>
               <label className="block font-inter font-semibold text-navy mb-2">Property Address *</label>
-              <input
-                type="text"
-                name="address"
+              <AddressAutocomplete
                 value={formData.address}
-                onChange={handleChange}
+                onChange={(val) => setFormData(prev => ({ ...prev, address: val }))}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg font-inter focus:outline-none focus:border-gold"
-                placeholder="123 Luxury Lane, NC 12345"
               />
             </div>
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { X, Send } from 'lucide-react'
 
-const GREETING = "Hey! 👋 I'm Gia from Mop Mafia. Looking for a quote on luxury cleaning for your home?"
+const GREETING = "Hey! 👋 I'm Gia from Mop Mafia. What can I help you with today?"
 
 interface Message {
   role: 'gia' | 'user'
