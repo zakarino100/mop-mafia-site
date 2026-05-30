@@ -251,7 +251,6 @@ Which one works for you?`,
       if (updated.contactStep === 'email') {
         updated.email = userText
         updated.contactStep = 'done'
-        // Now reveal pricing for chosen tier (or ask which tier if we still don't know)
         if (!updated.chosenTier) {
           return { text: 'Which plan were you leaning toward, Pro, Plus, or Ultra?', next: 'pricing', updatedLead: updated }
         }
@@ -259,7 +258,7 @@ Which one works for you?`,
         const price = updated.chosenTier === 'Pro' ? pro : updated.chosenTier === 'Ultra' ? ultra : plus
         updated.chosenPrice = price
         return {
-          text: `Got it. The ${updated.chosenTier} plan is $${price} per visit. What are 2 or 3 dates and times that work for you?`,
+          text: `Got it. Here is the pricing for a ${updated.serviceType}${updated.frequency !== 'one time' ? ' ' + updated.frequency : ''}:\n\nPro $${pro} per visit\nPlus $${plus} per visit\nUltra $${ultra} per visit\n\nThe ${updated.chosenTier} is $${price}. What are 2 or 3 dates and times that work for you?`,
           next: 'schedule',
           updatedLead: updated,
         }
@@ -285,13 +284,32 @@ Which one works for you?`,
       return { text: 'Which one, Pro, Plus, or Ultra?', next: 'pricing', updatedLead: updated }
     }
 
-    case 'schedule':
+    case 'schedule': {
+      // Detect if they are asking about pricing instead of giving dates
+      const isPricingQ = /how much|price|cost|\$|pro|plus|ultra|what.*(plan|option)|switch/i.test(userText)
+      if (isPricingQ) {
+        const { pro, plus, ultra } = buildPricing(updated.sqft || 2000, updated.serviceType, updated.frequency)
+        const planMatch = /pro/i.test(userText) ? 'Pro' : /ultra/i.test(userText) ? 'Ultra' : /plus/i.test(userText) ? 'Plus' : ''
+        const focusPrice = planMatch === 'Pro' ? pro : planMatch === 'Ultra' ? ultra : planMatch === 'Plus' ? plus : null
+
+        let reply = ''
+        if (focusPrice && planMatch) {
+          reply = `${planMatch} is $${focusPrice} per visit. For reference: Pro $${pro}, Plus $${plus}, Ultra $${ultra}. Which one do you want to move forward with?`
+          updated.chosenTier = planMatch
+          updated.chosenPrice = focusPrice
+        } else {
+          reply = `Pro $${pro} per visit, Plus $${plus} per visit, Ultra $${ultra} per visit. Which one works for you?`
+        }
+        return { text: reply, next: 'schedule', updatedLead: updated }
+      }
+      // They gave scheduling preferences
       updated.schedulePrefs = userText
       return {
-        text: `Perfect. Nicole will reach out to confirm one of those times with you. Looking forward to taking care of the home.`,
+        text: 'Perfect. Nicole will reach out to confirm one of those times. Looking forward to taking care of the home.',
         next: 'done',
         updatedLead: updated,
       }
+    }
 
     case 'objection': {
       const t = userText.toLowerCase()
