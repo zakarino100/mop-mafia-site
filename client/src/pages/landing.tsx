@@ -1,5 +1,7 @@
 import { Link } from 'wouter'
-import { Star, ShieldCheck, Users, Award, Home } from 'lucide-react'
+import { ShieldCheck, Users, Award, Home } from 'lucide-react'
+import { Gallery } from '../components/gallery'
+import { Reviews } from '../components/reviews'
 
 export function LandingPage() {
   return (
@@ -156,23 +158,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* SECTION 5: PHOTO GALLERY ROW */}
-      <section className="bg-white" aria-label="Gallery of our work">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-0">
-          <div className="h-64 md:h-80 overflow-hidden">
-            <img src="/mopmafia-bathroom.jpg" alt="Luxury bathroom cleaned by Mop Mafia" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
-          </div>
-          <div className="h-64 md:h-80 overflow-hidden">
-            <img src="/mopmafia-kitchen.jpg" alt="Luxury kitchen professionally cleaned" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
-          </div>
-          <div className="h-64 md:h-80 overflow-hidden">
-            <img src="/mopmafia-living.jpg" alt="Immaculate luxury living room" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
-          </div>
-          <div className="h-64 md:h-80 overflow-hidden">
-            <img src="/mopmafia-bedroom.jpg" alt="Pristine luxury master bedroom" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" loading="lazy" />
-          </div>
-        </div>
-      </section>
+      {/* SECTION 5: PHOTO GALLERY */}
+      <Gallery />
 
       {/* SECTION 6: FAMILY */}
       <section className="bg-white" aria-label="Our family story">
@@ -219,77 +206,8 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* SECTION 8: REVIEWS */}
-      <section className="bg-cream section-padding" aria-label="Customer reviews">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-gold text-sm font-inter font-semibold tracking-widest uppercase mb-4">Reviews</p>
-            <h2 className="font-playfair text-5xl text-navy mb-4">Five Stars. Every Single Time.</h2>
-            <div className="flex justify-center gap-2 mb-2">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} size={28} className="fill-gold text-gold" />
-              ))}
-            </div>
-            <p className="font-inter text-gray-500 text-sm">100+ verified Google reviews</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-lg shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} size={16} className="fill-gold text-gold" />)}
-              </div>
-              <p className="font-cormorant italic text-lg text-gray-700 mb-6">
-                "I have never seen my kitchen look this clean. They treat my home like it's their own. Absolutely worth every penny — and then some."
-              </p>
-              <p className="font-inter font-semibold text-navy">Jennifer M.</p>
-              <p className="font-inter text-sm text-gray-500">Verified Google Review · Cary, NC</p>
-            </div>
-            <div className="bg-white p-8 rounded-lg shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} size={16} className="fill-gold text-gold" />)}
-              </div>
-              <p className="font-cormorant italic text-lg text-gray-700 mb-6">
-                "We've tried 4 different cleaning services over the years. Mop Mafia is the only one we've kept. The difference is night and day — they care."
-              </p>
-              <p className="font-inter font-semibold text-navy">Robert D.</p>
-              <p className="font-inter text-sm text-gray-500">Verified Google Review · Raleigh, NC</p>
-            </div>
-            <div className="bg-white p-8 rounded-lg shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} size={16} className="fill-gold text-gold" />)}
-              </div>
-              <p className="font-cormorant italic text-lg text-gray-700 mb-6">
-                "The attention to detail is unmatched. My realtor actually asked if we renovated before listing. That's how good these ladies are."
-              </p>
-              <p className="font-inter font-semibold text-navy">Sarah K.</p>
-              <p className="font-inter text-sm text-gray-500">Verified Google Review · Chapel Hill, NC</p>
-            </div>
-          </div>
-
-          {/* Extra 2 reviews */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">
-            <div className="bg-white p-8 rounded-lg shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} size={16} className="fill-gold text-gold" />)}
-              </div>
-              <p className="font-cormorant italic text-lg text-gray-700 mb-6">
-                "We have a 6,000 sq ft home and finding someone who actually cleans it properly has been a 10-year struggle. Mop Mafia solved that on their first visit."
-              </p>
-              <p className="font-inter font-semibold text-navy">Marcus T.</p>
-              <p className="font-inter text-sm text-gray-500">Verified Google Review · Durham, NC</p>
-            </div>
-            <div className="bg-white p-8 rounded-lg shadow-sm">
-              <div className="flex gap-1 mb-4">
-                {[...Array(5)].map((_, i) => <Star key={i} size={16} className="fill-gold text-gold" />)}
-              </div>
-              <p className="font-cormorant italic text-lg text-gray-700 mb-6">
-                "Trusted them with my home after our move-in. Every cabinet, every closet, every corner. They didn't miss a thing. Completely blown away."
-              </p>
-              <p className="font-inter font-semibold text-navy">Diane L.</p>
-              <p className="font-inter text-sm text-gray-500">Verified Google Review · Wake Forest, NC</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* SECTION 8: REVIEWS — live from COMMAND */}
+      <Reviews />
 
       {/* SECTION 9: WHY CUSTOM QUOTE */}
       <section className="bg-navy section-padding" aria-label="Why we quote custom">

@@ -1,16 +1,20 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'wouter'
+import { Link, useLocation } from 'wouter'
 import { Menu, X } from 'lucide-react'
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [location] = useLocation()
+
+  // Only hero (homepage) starts dark — all other pages have light backgrounds
+  const isHeroPage = location === '/'
+  // Nav is solid when: scrolled past hero OR not on homepage
+  const isSolid = scrolled || !isHeroPage
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50)
-    }
-    window.addEventListener('scroll', handleScroll)
+    const handleScroll = () => setScrolled(window.scrollY > 50)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
@@ -23,7 +27,7 @@ export function Nav() {
   return (
     <nav
       className={`fixed w-full z-50 transition-all duration-300 ${
-        scrolled
+        isSolid
           ? 'bg-navy/95 backdrop-blur-md shadow-lg'
           : 'bg-transparent'
       }`}
