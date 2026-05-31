@@ -41,6 +41,7 @@ export function GiaChat() {
   const inputRef = useRef<HTMLInputElement>(null)
   const nudgeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastActivity = useRef(Date.now())
+  const nudgeCount = useRef(0)
 
   // History for Claude (alternating user/assistant)
   const apiHistory = useRef<ApiMessage[]>([])
@@ -76,10 +77,11 @@ export function GiaChat() {
     if (nudgeTimer.current) clearTimeout(nudgeTimer.current)
     nudgeTimer.current = setTimeout(() => {
       const elapsed = Date.now() - lastActivity.current
-      if (elapsed >= 90000) {
+      if (elapsed >= 90000 && nudgeCount.current < 2) {
         const nudge = 'Still there? Happy to answer any questions.'
         setMessages(prev => [...prev, { role: 'gia', text: nudge }])
         apiHistory.current.push({ role: 'assistant', content: nudge })
+        nudgeCount.current += 1
         playGiaSound()
       }
     }, 92000)
@@ -105,6 +107,7 @@ export function GiaChat() {
     const userMsg: Message = { role: 'user', text }
     setMessages(prev => [...prev, userMsg])
     apiHistory.current.push({ role: 'user', content: text })
+    nudgeCount.current = 0 // reset nudge count when user replies
 
     setLoading(true)
     try {
