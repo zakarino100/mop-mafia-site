@@ -10,6 +10,27 @@ type ApiMessage = { role: 'user' | 'assistant'; content: string }
 
 const OPENER = "Hi, I\u2019m Gia \ud83d\udc4b. What kind of cleaning are you looking for?"
 
+function playGiaSound() {
+  try {
+    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+    const playTone = (freq: number, delay: number) => {
+      const osc = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.type = 'sine'
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.frequency.setValueAtTime(freq, ctx.currentTime + delay)
+      gain.gain.setValueAtTime(0, ctx.currentTime + delay)
+      gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + delay + 0.01)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.5)
+      osc.start(ctx.currentTime + delay)
+      osc.stop(ctx.currentTime + delay + 0.55)
+    }
+    playTone(880, 0)
+    playTone(1100, 0.13)
+  } catch {}
+}
+
 export function GiaChat() {
   const [phase, setPhase] = useState<'hidden' | 'bubble' | 'open'>('hidden')
   const [messages, setMessages] = useState<Message[]>([])
@@ -45,6 +66,7 @@ export function GiaChat() {
     if (phase === 'open' && messages.length === 0) {
       setMessages([{ role: 'gia', text: OPENER }])
       apiHistory.current = [{ role: 'assistant', content: OPENER }]
+      playGiaSound()
     }
   }, [phase])
 
@@ -58,6 +80,7 @@ export function GiaChat() {
         const nudge = 'Still there? Happy to answer any questions.'
         setMessages(prev => [...prev, { role: 'gia', text: nudge }])
         apiHistory.current.push({ role: 'assistant', content: nudge })
+        playGiaSound()
       }
     }, 92000)
     return () => { if (nudgeTimer.current) clearTimeout(nudgeTimer.current) }
@@ -96,6 +119,7 @@ export function GiaChat() {
       setMessages(prev => [...prev, { role: 'gia', text: reply }])
       apiHistory.current.push({ role: 'assistant', content: reply })
       lastActivity.current = Date.now()
+      playGiaSound()
     } catch {
       const err = 'Having trouble connecting. Give me one second.'
       setMessages(prev => [...prev, { role: 'gia', text: err }])

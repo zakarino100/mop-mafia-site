@@ -337,7 +337,7 @@ export function QuoteTool() {
           </div>
 
           <div className="space-y-3">
-            {['Woman-Owned & Family-Operated', 'No Contractors — Just Us', 'Fully Insured & Bonded', '100+ Five-Star Reviews', 'Serving $1M+ Homes'].map(item => (
+            {['Woman-Owned & Family-Operated', 'No Contractors — Just Us', 'Fully Insured & Bonded', '100+ Five-Star Reviews', 'Serving Premium Homes'].map(item => (
               <div key={item} className="flex gap-2 font-inter text-gray-700 text-sm">
                 <span className="text-gold">✓</span> {item}
               </div>

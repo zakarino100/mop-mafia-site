@@ -90,7 +90,7 @@ export function LandingPage() {
                 Mop Mafia isn't for everyone — and that's by design. We specialize exclusively in luxury residential properties where attention to detail, discretion, and consistency aren't negotiable. Every job is handled by our family. Every time.
               </p>
               <div className="flex flex-wrap gap-3">
-                <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">Serving $1M+ Homes</span>
+                <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">Serving Premium Homes</span>
                 <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">Fully Insured</span>
                 <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">5-Star Rated</span>
               </div>
