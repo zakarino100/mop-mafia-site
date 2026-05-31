@@ -118,6 +118,12 @@ export function GiaChat() {
       })
       const data = await res.json()
       const reply: string = data.text || 'One sec...'
+      const delayMs: number = data.delayMs || 0
+
+      // Hold typing indicator for delayMs (e.g. ~20s on price reveal)
+      if (delayMs > 0) {
+        await new Promise(resolve => setTimeout(resolve, delayMs))
+      }
 
       setMessages(prev => [...prev, { role: 'gia', text: reply }])
       apiHistory.current.push({ role: 'assistant', content: reply })

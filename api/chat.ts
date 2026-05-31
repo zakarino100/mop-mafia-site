@@ -175,7 +175,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       text = text.replace(/<<BOOKING_READY:.*?>>/s, '').trim()
     }
 
-    res.json({ text })
+    // Signal a ~20s delay on price reveal so the frontend holds the typing indicator
+    const isPriceReveal = /here is the pricing|pro \$|plus \$|ultra \$/i.test(text)
+    res.json({ text, delayMs: isPriceReveal ? 20000 : 0 })
   } catch (err: any) {
     console.error('Anthropic error:', err)
     res.status(500).json({ error: 'Chat unavailable' })
