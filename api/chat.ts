@@ -169,7 +169,7 @@ async function createSwellLead(lead: Record<string, any>) {
   const secret = process.env.WEBSITE_CHAT_SECRET
   if (!swellUrl || !secret) return
 
-  await fetch(`${swellUrl}/api/leads/website-chat`, {
+  await fetch(`${swellUrl}/api/webchat/lead`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${secret}`, 'Content-Type': 'application/json' },
     body: JSON.stringify(lead),
