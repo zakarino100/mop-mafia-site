@@ -9,7 +9,7 @@ interface Review {
   review_date: string
 }
 
-const COMMAND_URL = 'https://command-production-07a3.up.railway.app'
+const REVIEWS_API_URL = 'https://swell-production.up.railway.app'
 const BRAND = 'mop_mafia'
 
 // Seed reviews to show while API is being wired up
@@ -79,7 +79,7 @@ export function Reviews() {
   useEffect(() => {
     // Try to pull live reviews from COMMAND — fall back to seeds silently
     setLoading(true)
-    fetch(`${COMMAND_URL}/api/reviews/${BRAND}`)
+    fetch(`${REVIEWS_API_URL}/api/reviews/${BRAND}`)
       .then(r => r.json())
       .then(data => {
         if (Array.isArray(data) && data.length > 0) setReviews(data)
