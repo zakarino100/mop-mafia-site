@@ -132,7 +132,7 @@ export function QuoteTool() {
         <CheckCircle size={56} className="text-green-500 mx-auto mb-4" />
         <h3 className="font-playfair text-3xl text-navy mb-3">Request Sent!</h3>
         <p className="font-inter text-gray-600 mb-2">We'll be in touch within 24 hours.</p>
-        <p className="font-inter text-gray-500 text-sm">📱 Keep an eye on your phone — Gia may reach out shortly.</p>
+        <p className="font-inter text-gray-500 text-sm">Keep an eye on your phone. Gia may reach out shortly.</p>
       </div>
     )
   }
@@ -337,7 +337,7 @@ export function QuoteTool() {
           </div>
 
           <div className="space-y-3">
-            {['Woman-Owned & Family-Operated', 'No Contractors — Just Us', 'Fully Insured & Bonded', '100+ Five-Star Reviews', 'Serving Premium Homes'].map(item => (
+            {['Woman-Owned & Family-Operated', 'No Contractors — Just Us', 'Fully Insured & Bonded', '100+ Five-Star Reviews', 'Serving Homes Across the Triangle'].map(item => (
               <div key={item} className="flex gap-2 font-inter text-gray-700 text-sm">
                 <span className="text-gold">✓</span> {item}
               </div>

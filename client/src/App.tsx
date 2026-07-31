@@ -44,7 +44,7 @@ export default function App() {
       <div className="md:hidden mobile-sticky-cta">
         <Link href="/book">
           <a className="text-navy font-playfair font-bold text-lg w-full text-center block">
-            ✨ Get a Free Quote
+            Get a Free Quote
           </a>
         </Link>
       </div>

@@ -1,5 +1,6 @@
 import { Link } from 'wouter'
 import { useScrollReveal } from '../hooks/useScrollReveal'
+import { Seo } from '../components/seo'
 
 interface BlogPost {
   id: string
@@ -13,30 +14,36 @@ interface BlogPost {
 const seedPosts: BlogPost[] = [
   {
     id: '1',
-    title: 'The Art of Luxury Home Cleaning: Creating a Sanctuary',
-    excerpt: 'Discover how professional luxury cleaning transforms your home into a pristine sanctuary. Learn the techniques and products that set premium services apart.',
+    title: 'How to Keep a Home Cleaner Between Professional Visits',
+    excerpt: 'Simple habits and overlooked touchpoints that help a home stay cleaner, calmer, and easier to maintain between appointments.',
     date: 'May 28, 2026',
-    tags: ['Luxury', 'Home Care', 'Cleaning Tips'],
+    tags: ['Home Care', 'Cleaning Tips', 'Maintenance'],
   },
   {
     id: '2',
-    title: 'Sustainable Luxury: Eco-Friendly Deep Cleaning Methods',
-    excerpt: 'Explore how luxury cleaning services can protect your home and the environment simultaneously. Premium care doesn\'t have to compromise sustainability.',
+    title: 'Deep Cleaning Without Wasting Time or Product',
+    excerpt: 'What actually matters in a deep clean, where crews waste time, and how a better process protects both your schedule and your home.',
     date: 'May 21, 2026',
-    tags: ['Sustainability', 'Premium', 'Green Living'],
+    tags: ['Deep Cleaning', 'Efficiency', 'Green Living'],
   },
   {
     id: '3',
-    title: 'Maintaining Your Luxury Home Between Professional Cleanings',
-    excerpt: 'Expert tips and habits from our Mop Mafia team to keep your home immaculate between professional deep cleaning sessions.',
+    title: 'What to Look for in a Cleaning Team You Can Trust',
+    excerpt: 'The practical signs of a reliable cleaning company, from communication and consistency to how they handle details inside your home.',
     date: 'May 14, 2026',
-    tags: ['Home Maintenance', 'Professional Tips', 'Lifestyle'],
+    tags: ['Home Maintenance', 'Professional Tips', 'Hiring'],
   },
 ]
 
 export default function BlogPage() {
   return (
     <div className="w-full">
+      <Seo
+        title="Cleaning Tips and Updates"
+        description="Read Mop Mafia's home cleaning tips, practical guidance, and updates for homeowners across the Triangle."
+        path="/blog"
+        keywords="cleaning tips Raleigh, home maintenance blog Cary, deep cleaning advice Durham"
+      />
       {/* Hero Section */}
       <section className="bg-navy text-cream py-20 md:py-32">
         <div className="container mx-auto px-6 md:px-12">
@@ -44,7 +51,7 @@ export default function BlogPage() {
             Mop Mafia Journal
           </h1>
           <p className="font-inter text-lg text-cream/80 max-w-2xl">
-            Insights, tips, and stories about luxury home cleaning, maintenance, and creating the sanctuary you deserve.
+            Practical tips, home care advice, and a closer look at how we think about cleaning, maintenance, and consistency.
           </p>
         </div>
       </section>
@@ -67,7 +74,7 @@ export default function BlogPage() {
             Ready to Transform Your Home?
           </h2>
           <p className="font-inter text-lg text-cream/80 mb-8 max-w-2xl mx-auto">
-            Get a free quote from our Mop Mafia team and discover how luxury cleaning can elevate your living space.
+            Get a free quote from our team and let&apos;s talk about what would make your home easier to keep up.
           </p>
           <Link href="/book">
             <a className="btn-gold inline-block">
@@ -117,9 +124,9 @@ function BlogPostCard({ post }: { post: BlogPost }) {
           <span className="font-inter text-sm text-charcoal/60">
             {post.date}
           </span>
-          <a href="#" className="text-gold font-semibold text-sm hover:text-gold/80">
-            Read More →
-          </a>
+          <span className="text-gold font-semibold text-sm">
+            Full articles coming soon
+          </span>
         </div>
       </div>
     </article>

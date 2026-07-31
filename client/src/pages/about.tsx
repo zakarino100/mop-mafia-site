@@ -1,9 +1,16 @@
 import { CheckCircle2 } from 'lucide-react'
 import { Link } from 'wouter'
+import { Seo } from '../components/seo'
 
 export function AboutPage() {
   return (
     <div className="w-full pt-20">
+      <Seo
+        title="About Mop Mafia"
+        description="Learn how Mop Mafia built a trusted, family-run cleaning company focused on consistency, accountability, and detail."
+        path="/about"
+        keywords="about Mop Mafia, family cleaning company Raleigh, woman owned cleaning business North Carolina"
+      />
       {/* HERO */}
       <section className="relative h-96 overflow-hidden">
         <img
@@ -19,15 +26,15 @@ export function AboutPage() {
       {/* THE STORY */}
       <section className="bg-white section-padding">
         <div className="max-w-3xl mx-auto">
-          <h2 className="font-playfair text-5xl text-navy mb-8">We're Not a Franchise. We're a Family.</h2>
+          <h2 className="font-playfair text-5xl text-navy mb-8">Built to Feel Personal, Not Corporate</h2>
           <p className="font-inter text-lg text-gray-700 leading-relaxed mb-6">
-            Mop Mafia was born from one woman's determination to do things right. As an Italian-American single mother, our founder built this business on the values she raised her family with: pride in your work, respect for every home, and the kind of care you only get from someone who truly gives a damn.
+            Mop Mafia started with one woman who was tired of seeing cleaning companies treat homes like checklists. She built the business around the things homeowners actually care about: trust, consistency, and work that holds up after the crew leaves.
           </p>
           <p className="font-inter text-lg text-gray-700 leading-relaxed mb-6">
-            When she started, there was no franchise model. No business consultants. No shortcuts. Just a commitment to excellence and the belief that every home deserves to be treated like it matters — because it does.
+            That approach still drives the company now. We keep the team close, the standards clear, and the communication direct so every client knows what to expect.
           </p>
           <p className="font-inter text-lg text-gray-700 leading-relaxed mb-8">
-            Years later, Amira, Layla, and Selina aren't just family — they're part of the team. And when we show up to your home, you get us. Not a contractor. Not a stranger. Us. That difference is everything.
+            Family is part of the story, but accountability is the real point. When we show up to your home, you get people who know the standard, care about the result, and stand behind the work.
           </p>
           <div className="flex flex-wrap gap-4">
             <div className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full">
@@ -46,9 +53,9 @@ export function AboutPage() {
       {/* NO CONTRACTORS EVER */}
       <section className="bg-cream section-padding">
         <div className="max-w-3xl mx-auto">
-          <h2 className="font-playfair text-5xl text-navy mb-8">No Contractors. Ever.</h2>
+          <h2 className="font-playfair text-5xl text-navy mb-8">Why We Keep It In-House</h2>
           <p className="font-inter text-lg text-gray-700 leading-relaxed mb-6">
-            You won't find a single contractor on Mop Mafia's roster. That's intentional. Here's why:
+            We do not hand your home off to a revolving list of subcontractors. That decision keeps the work tighter and the experience more consistent.
           </p>
           <ul className="space-y-4 mb-8">
             <li className="flex gap-4">
@@ -77,7 +84,7 @@ export function AboutPage() {
             </li>
           </ul>
           <p className="font-inter text-lg text-gray-700 leading-relaxed">
-            This is the Mop Mafia difference. It's not scalable. It's not trendy. But it works.
+            It is a simpler way to run the business, and it works better for the people trusting us with their homes.
           </p>
         </div>
       </section>
@@ -127,7 +134,7 @@ export function AboutPage() {
               <div className="text-6xl mb-4">👩</div>
               <h3 className="font-playfair text-2xl text-navy mb-2">Founder & Owner</h3>
               <p className="font-inter text-gray-600 mb-4">
-                Italian-American single mother. Started with determination and ended with a business built on family values.
+                Built Mop Mafia around consistency, trust, and work that homeowners can feel the moment they walk in.
               </p>
               <p className="font-inter text-sm text-gold font-semibold">Woman-Owned</p>
             </div>
@@ -137,7 +144,7 @@ export function AboutPage() {
               <div className="text-6xl mb-4">👧</div>
               <h3 className="font-playfair text-2xl text-navy mb-2">Amira</h3>
               <p className="font-inter text-gray-600">
-                Brings precision and attention to detail that turns good into exceptional. Part of the core team.
+                Brings steady execution and a strong eye for the details that separate decent work from polished work.
               </p>
             </div>
 
@@ -146,7 +153,7 @@ export function AboutPage() {
               <div className="text-6xl mb-4">👧</div>
               <h3 className="font-playfair text-2xl text-navy mb-2">Layla</h3>
               <p className="font-inter text-gray-600">
-                Ensures every home feels cared for. Her work speaks for itself. Family-first approach to excellence.
+                Helps make sure every home feels finished, cared for, and ready for real life after we leave.
               </p>
             </div>
           </div>
@@ -154,7 +161,7 @@ export function AboutPage() {
             <div className="text-6xl mb-4 inline-block">👧</div>
             <h3 className="font-playfair text-2xl text-navy mb-2">Selina</h3>
             <p className="font-inter text-gray-600 max-w-md mx-auto">
-              Dedication and professionalism define her approach. Part of the family. Part of your home care.
+              Known for reliability, professionalism, and helping keep the team standard consistent from visit to visit.
             </p>
           </div>
         </div>
@@ -165,7 +172,7 @@ export function AboutPage() {
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="font-playfair text-5xl text-white mb-4">Ready to Experience the Difference?</h2>
           <p className="font-inter text-xl text-gray-200 mb-10">
-            Schedule a consultation and let's talk about what your home deserves.
+            Schedule a consultation and let&apos;s talk about what your home needs.
           </p>
           <Link href="/book">
             <a className="inline-block px-10 py-4 bg-gold text-navy font-playfair text-lg font-bold rounded hover:opacity-90 transition-opacity">

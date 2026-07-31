@@ -1,9 +1,16 @@
 import { Reviews } from '../components/reviews'
 import { Link } from 'wouter'
+import { Seo } from '../components/seo'
 
 export function ReviewsPage() {
   return (
     <div className="w-full pt-20">
+      <Seo
+        title="Reviews"
+        description="See what Mop Mafia clients are saying about recurring cleaning, deep cleaning, and move-in/move-out work."
+        path="/reviews"
+        keywords="Mop Mafia reviews, Raleigh cleaning reviews, Cary house cleaning testimonials"
+      />
       {/* Hero */}
       <section className="bg-navy py-20 px-6 text-center">
         <p className="text-gold text-sm font-inter font-semibold tracking-widest uppercase mb-4">What Clients Say</p>

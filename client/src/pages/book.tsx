@@ -1,9 +1,16 @@
 import { Star } from 'lucide-react'
 import { QuoteTool } from '../components/quote-tool'
+import { Seo } from '../components/seo'
 
 export function BookPage() {
   return (
     <div className="w-full pt-20">
+      <Seo
+        title="Request a Quote"
+        description="Request a custom cleaning quote from Mop Mafia for recurring service, deep cleaning, or move-in/move-out cleaning."
+        path="/book"
+        keywords="request cleaning quote Raleigh, house cleaning estimate Cary, deep clean quote Durham"
+      />
       {/* HERO */}
       <section className="bg-navy py-16">
         <div className="max-w-5xl mx-auto px-6 md:px-12 text-center">

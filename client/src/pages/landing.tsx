@@ -2,10 +2,17 @@ import { Link } from 'wouter'
 import { ShieldCheck, Users, Award, Home } from 'lucide-react'
 import { Gallery } from '../components/gallery'
 import { Reviews } from '../components/reviews'
+import { Seo } from '../components/seo'
 
 export function LandingPage() {
   return (
     <div className="w-full">
+      <Seo
+        title="Home Cleaning in Raleigh, Cary, Durham and Chapel Hill"
+        description="Mop Mafia provides detail-driven home cleaning across the Triangle with a trusted in-house team, custom quotes, and no contractors."
+        path="/"
+        keywords="home cleaning Raleigh NC, house cleaning Cary NC, deep cleaning Durham NC, move out cleaning Chapel Hill, recurring cleaning Wake Forest, woman owned cleaning company"
+      />
       {/* SECTION 1: HERO */}
       <section
         className="min-h-screen flex items-center justify-center relative bg-cover bg-center"
@@ -23,10 +30,10 @@ export function LandingPage() {
             </p>
           </div>
           <h1 className="font-playfair text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-            White-Glove Cleaning for Homes That Deserve the Best
+            Detail-Driven Home Cleaning for Busy Households
           </h1>
           <p className="font-inter text-lg md:text-xl text-gray-100 mb-10 max-w-2xl mx-auto">
-            We specialize in luxury homes where every detail matters. No contractors — just family.
+            Reliable, high-standard cleaning across the Triangle. The same trusted team shows up every time. No contractors.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/book">
@@ -84,13 +91,13 @@ export function LandingPage() {
                 Why Mop Mafia
               </p>
               <h2 className="font-playfair text-4xl md:text-5xl text-white mb-6 leading-tight">
-                We Only Work With Homes That Deserve This Standard
+                A Higher Standard Without the Runaround
               </h2>
               <p className="font-inter text-gray-100 text-lg leading-relaxed mb-8">
-                Mop Mafia isn't for everyone — and that's by design. We specialize exclusively in luxury residential properties where attention to detail, discretion, and consistency aren't negotiable. Every job is handled by our family. Every time.
+                We built Mop Mafia for homeowners who want consistency, discretion, and real attention to detail. Whether you need recurring upkeep, a reset before guests arrive, or help getting a home move-in ready, you get the same in-house team and the same standard every time.
               </p>
               <div className="flex flex-wrap gap-3">
-                <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">Serving Premium Homes</span>
+                <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">Serving Homes Across the Triangle</span>
                 <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">Fully Insured</span>
                 <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">5-Star Rated</span>
               </div>
@@ -114,7 +121,7 @@ export function LandingPage() {
               <div className="text-4xl mb-4">✨</div>
               <h3 className="font-playfair text-2xl text-navy mb-3">Standard Clean</h3>
               <p className="font-inter text-gray-600 text-sm mb-6">
-                Regular maintenance for pristine living spaces. Perfect for homes that want to stay immaculate between visits.
+                Recurring maintenance that keeps your home comfortable, tidy, and guest-ready between visits.
               </p>
               <Link href="/services">
                 <a className="text-gold font-inter font-semibold hover:opacity-70 transition-opacity flex items-center gap-2">
@@ -127,7 +134,7 @@ export function LandingPage() {
               <div className="text-4xl mb-4">🏆</div>
               <h3 className="font-playfair text-2xl text-navy mb-3">Deep Clean</h3>
               <p className="font-inter text-gray-600 text-sm mb-6">
-                Comprehensive refresh for every corner. For when good isn't good enough. We go deeper — into every surface, every detail.
+                A top-to-bottom reset for the areas that need more time, more detail, and more attention.
               </p>
               <Link href="/services">
                 <a className="text-gold font-inter font-semibold hover:opacity-70 transition-opacity flex items-center gap-2">
@@ -140,7 +147,7 @@ export function LandingPage() {
               <div className="text-4xl mb-4">🔄</div>
               <h3 className="font-playfair text-2xl text-navy mb-3">Move In / Move Out</h3>
               <p className="font-inter text-gray-600 text-sm mb-6">
-                Make it shine for your next chapter. Full property refresh for transitions that demand absolute perfection.
+                Thorough transition cleaning to make move-ins smoother and move-outs easier.
               </p>
               <Link href="/services">
                 <a className="text-gold font-inter font-semibold hover:opacity-70 transition-opacity flex items-center gap-2">
@@ -167,15 +174,15 @@ export function LandingPage() {
           <div className="bg-navy flex items-center justify-center p-8 md:p-16 order-2 lg:order-1">
             <div className="max-w-xl">
               <h2 className="font-playfair text-5xl text-white mb-8 leading-tight">
-                We're Not a Franchise. We're a Family.
+                Family-Owned. Personally Accountable.
               </h2>
               <p className="font-inter text-gray-100 text-lg leading-relaxed mb-8">
-                Mop Mafia was born from one woman's determination to do things right. As an Italian-American single mother, our founder built this business on the values she raised her family with: pride in your work, respect for every home, and the kind of care you only get from someone who truly gives a damn. Amira, Layla, and Selina aren't just family — they're part of the team. When we show up to your home, you get us. Not a contractor. Not a stranger. Us.
+                Mop Mafia started with one simple idea: homeowners deserve a cleaning company that takes their home personally. Our founder built the business around pride, consistency, and respect for every space we enter. Today the family is still part of the work, which means you get a team that knows the standard and stands behind it.
               </p>
               <div className="flex flex-wrap gap-4">
                 <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">Woman-Owned</span>
                 <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">Family-Operated</span>
-                <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">No Contractors. Ever.</span>
+                <span className="inline-block px-4 py-2 bg-gold/20 border border-gold rounded-full text-gold font-inter font-semibold text-sm">No Contractors</span>
               </div>
             </div>
           </div>
@@ -194,7 +201,7 @@ export function LandingPage() {
       <section className="relative h-96 md:h-[500px] overflow-hidden" aria-hidden="true">
         <img
           src="/mopmafia-foyer.jpg"
-          alt="Grand luxury home entryway"
+          alt="Cleaned home entryway"
           className="w-full h-full object-cover"
           loading="lazy"
         />
@@ -216,13 +223,13 @@ export function LandingPage() {
             <div>
               <p className="text-gold text-sm font-inter font-semibold tracking-widest uppercase mb-4">Our Approach</p>
               <h2 className="font-playfair text-4xl md:text-5xl text-white mb-6 leading-tight">
-                No Published Rates. That's Intentional.
+                Custom Quotes That Actually Make Sense
               </h2>
               <p className="font-inter text-gray-200 text-lg leading-relaxed">
-                A 3,000 sq ft home and a 9,000 sq ft estate aren't the same job. Neither are a monthly maintenance visit and a move-out deep clean. We quote every home individually — because that's the only honest way to do it.
+                A condo, a busy family home, and a large property do not need the same scope of work. We quote each home individually so you get the right level of service without paying for a generic package that does not fit.
               </p>
               <p className="font-inter text-gray-300 text-lg leading-relaxed mt-4">
-                Fill out the form, tell us about your home, and we'll be in touch personally to discuss what you need.
+                Tell us a little about the home and what you need, and we will reach out personally with the next step.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-6">
@@ -247,7 +254,7 @@ export function LandingPage() {
       <section className="relative h-64 md:h-96 overflow-hidden" aria-hidden="true">
         <img
           src="/mopmafia-estate.jpg"
-          alt="Luxury estate neighborhood in North Carolina"
+          alt="Residential neighborhood in North Carolina"
           className="w-full h-full object-cover"
           loading="lazy"
         />
@@ -262,7 +269,7 @@ export function LandingPage() {
           <p className="font-inter text-xl text-gray-200 mb-4">
             Fill out our short form and we'll reach out personally within 24 hours.
           </p>
-          <p className="font-inter text-gray-400 text-sm mb-10">No pricing lists. No packages. Just a conversation about your home.</p>
+          <p className="font-inter text-gray-400 text-sm mb-10">No one-size-fits-all packages. Just a straightforward conversation about your home.</p>
           <Link href="/book">
             <a className="inline-block px-10 py-4 bg-gold text-navy font-playfair text-lg font-bold rounded hover:opacity-90 transition-opacity">
               Request Your Custom Quote →
@@ -281,7 +288,7 @@ export function LandingPage() {
                 <span className="text-gold ml-2">Mafia</span>
               </h3>
               <p className="font-inter text-gray-300 text-sm mb-4">
-                White-Glove Cleaning for Homes That Deserve the Best
+                Detail-driven home cleaning for busy households across the Triangle.
               </p>
               <p className="font-inter text-gray-400 text-xs">Woman-Owned · Family-Operated · No Contractors · North Carolina</p>
             </div>

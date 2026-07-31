@@ -1,11 +1,11 @@
 export function Gallery() {
   const images = [
-    { src: '/mopmafia-kitchen.jpg', alt: 'Luxury kitchen professionally cleaned' },
-    { src: '/mopmafia-bathroom.jpg', alt: 'Luxury bathroom cleaned by Mop Mafia' },
-    { src: '/mopmafia-living.jpg', alt: 'Immaculate luxury living room' },
-    { src: '/mopmafia-bedroom.jpg', alt: 'Pristine luxury master bedroom' },
-    { src: '/mopmafia-foyer.jpg', alt: 'Grand luxury home entryway' },
-    { src: '/mopmafia-detail.jpg', alt: 'Detail cleaning of luxury surface' },
+    { src: '/mopmafia-kitchen.jpg', alt: 'Kitchen professionally cleaned by Mop Mafia' },
+    { src: '/mopmafia-bathroom.jpg', alt: 'Bathroom cleaned by Mop Mafia' },
+    { src: '/mopmafia-living.jpg', alt: 'Freshly cleaned living room' },
+    { src: '/mopmafia-bedroom.jpg', alt: 'Freshly cleaned primary bedroom' },
+    { src: '/mopmafia-foyer.jpg', alt: 'Home entryway cleaned by Mop Mafia' },
+    { src: '/mopmafia-detail.jpg', alt: 'Detail cleaning on a home surface' },
   ]
 
   return (

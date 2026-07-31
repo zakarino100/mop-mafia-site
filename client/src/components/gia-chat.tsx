@@ -8,7 +8,7 @@ interface Message {
 
 type ApiMessage = { role: 'user' | 'assistant'; content: string }
 
-const OPENER = "Hi, I\u2019m Gia \ud83d\udc4b. What kind of cleaning are you looking for?"
+const OPENER = "Hi, I'm Gia. What kind of cleaning are you looking for?"
 
 function playGiaSound() {
   try {
@@ -147,12 +147,12 @@ export function GiaChat() {
     <>
       {phase === 'bubble' && (
         <div
-          className="fixed bottom-20 md:bottom-6 right-4 z-50 flex items-end gap-2 cursor-pointer animate-bounce-in"
+          className="fixed bottom-28 md:bottom-6 right-4 z-40 flex items-end gap-2 cursor-pointer animate-bounce-in"
           onClick={openChat}
         >
           <div className="bg-white shadow-xl rounded-2xl rounded-br-none px-4 py-3 max-w-[230px] border border-gray-100">
             <p className="font-inter text-sm text-gray-800 leading-snug">
-              Hi, I&rsquo;m Gia 👋. What kind of cleaning are you looking for?
+              Hi, I&apos;m Gia. What kind of cleaning are you looking for?
             </p>
           </div>
           <div className="relative flex-shrink-0">
@@ -164,8 +164,8 @@ export function GiaChat() {
 
       {phase === 'open' && (
         <div
-          className="fixed bottom-20 md:bottom-6 right-4 z-50 w-[340px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
-          style={{ height: '490px' }}
+          className="fixed bottom-28 md:bottom-6 right-4 z-40 w-[340px] max-w-[calc(100vw-2rem)] bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden"
+          style={{ height: 'min(490px, calc(100dvh - 9rem))' }}
         >
           {/* Header */}
           <div className="bg-navy px-4 py-3 flex items-center gap-3">

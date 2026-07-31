@@ -1,5 +1,6 @@
 import { CheckCircle2 } from 'lucide-react'
 import { Link } from 'wouter'
+import { Seo } from '../components/seo'
 
 export function ServicesPage() {
   const services = [
@@ -68,11 +69,11 @@ export function ServicesPage() {
   const faqs = [
     {
       q: 'How often should I schedule a clean?',
-      a: 'This depends on your lifestyle and home. Luxury properties often benefit from weekly or bi-weekly service, but we can customize a schedule that works for you.'
+      a: 'This depends on your lifestyle and home. Many clients prefer weekly or bi-weekly service, but we can tailor a schedule that makes sense for your space and routine.'
     },
     {
       q: 'Do you provide your own cleaning supplies?',
-      a: 'Yes, we bring professional-grade, luxury-appropriate supplies. If you have specific brands or products you prefer, let us know and we\'ll use those.'
+      a: 'Yes, we bring professional-grade supplies. If you have specific brands or products you prefer, let us know and we\'ll use those.'
     },
     {
       q: 'Are you insured and bonded?',
@@ -80,7 +81,7 @@ export function ServicesPage() {
     },
     {
       q: 'What areas do you serve?',
-      a: 'We primarily serve the luxury residential market in North Carolina. Contact us about your specific location.'
+      a: 'We serve homes across Raleigh, Cary, Durham, Chapel Hill, Wake Forest, and nearby areas. Contact us about your location.'
     },
     {
       q: 'How much notice do I need to give?',
@@ -94,6 +95,12 @@ export function ServicesPage() {
 
   return (
     <div className="w-full pt-20">
+      <Seo
+        title="Cleaning Services"
+        description="Explore Mop Mafia's recurring cleaning, deep cleaning, move-in/move-out, and custom home cleaning services across the Triangle."
+        path="/services"
+        keywords="deep cleaning Raleigh, recurring cleaning Cary, move out cleaning Durham, house cleaning services Chapel Hill"
+      />
       {/* HERO */}
       <section className="relative h-96 overflow-hidden">
         <img
@@ -104,7 +111,7 @@ export function ServicesPage() {
         <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
           <div className="text-center">
             <h1 className="font-playfair text-5xl md:text-6xl text-white mb-4">Our Services</h1>
-            <p className="font-inter text-xl text-gray-100">Specialized cleaning for luxury homes</p>
+            <p className="font-inter text-xl text-gray-100">Custom cleaning for homes that need real attention to detail</p>
           </div>
         </div>
       </section>
